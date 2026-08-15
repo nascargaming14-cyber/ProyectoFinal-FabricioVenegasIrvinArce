@@ -28,5 +28,8 @@ Route::get('/tienda/{producto}', [ProductoController::class, 'show'])->name('tie
 Route::middleware(['auth'])->group(function () {
     Route::resource('categorias', CategoriaController::class);
     Route::resource('productos', ProductoController::class)->except(['show']);
+<<<<<<< HEAD
     Route::resource('categorias', CategoriaController::class)->except(['show']);
+=======
+>>>>>>> 8e11ae89772039915257ed5837d81488e55e0100
 });
