@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\ProductoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,3 +20,13 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+// Catálogo público (cualquiera puede ver productos, sin login)
+Route::get('/tienda', [ProductoController::class, 'catalogo'])->name('tienda.index');
+Route::get('/tienda/{producto}', [ProductoController::class, 'show'])->name('tienda.show');
+
+// Administración (requiere estar logueado)
+Route::middleware(['auth'])->group(function () {
+    Route::resource('categorias', CategoriaController::class);
+    Route::resource('productos', ProductoController::class)->except(['show']);
+    Route::resource('categorias', CategoriaController::class)->except(['show']);
+});
