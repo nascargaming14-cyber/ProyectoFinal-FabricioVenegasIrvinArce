@@ -9,9 +9,10 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        <table class="table table-striped">
+        <table class="table table-striped align-middle">
             <thead>
                 <tr>
+                    <th>Imagen</th>
                     <th>Nombre</th>
                     <th>Categoría</th>
                     <th>Precio</th>
@@ -22,6 +23,13 @@
             <tbody>
                 @foreach($productos as $producto)
                     <tr>
+                        <td>
+                            @if($producto->imagen)
+                                <img src="{{ asset('storage/' . $producto->imagen) }}" alt="{{ $producto->nombre }}" style="height:40px; width:40px; object-fit:cover; border-radius:4px;">
+                            @else
+                                <span class="text-muted">—</span>
+                            @endif
+                        </td>
                         <td>{{ $producto->nombre }}</td>
                         <td>{{ $producto->categoria->nombre }}</td>
                         <td>₡{{ number_format($producto->precio_oferta ?? $producto->precio, 0) }}</td>

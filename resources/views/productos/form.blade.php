@@ -23,6 +23,42 @@
     @error('descripcion') <div class="text-danger">{{ $message }}</div> @enderror
 </div>
 
+<div class="mb-3">
+    <label class="form-label">Imagen de portada</label>
+    <input type="file" name="imagen" class="form-control" accept="image/*">
+    @error('imagen') <div class="text-danger">{{ $message }}</div> @enderror
+
+    @if(isset($producto) && $producto->imagen)
+        <div class="mt-2">
+            <img src="{{ asset('storage/' . $producto->imagen) }}" alt="{{ $producto->nombre }}" style="max-height:120px;">
+            <div class="form-check mt-1">
+                <input type="checkbox" name="eliminar_imagen" value="1" class="form-check-input" id="eliminar_imagen">
+                <label class="form-check-label" for="eliminar_imagen">Quitar imagen de portada</label>
+            </div>
+        </div>
+    @endif
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Galería de imágenes (opcional, puedes seleccionar varias)</label>
+    <input type="file" name="imagenes[]" class="form-control" multiple accept="image/*">
+    @error('imagenes.*') <div class="text-danger">{{ $message }}</div> @enderror
+
+    @if(isset($producto) && $producto->imagenes && $producto->imagenes->count())
+        <div class="d-flex flex-wrap gap-3 mt-2">
+            @foreach($producto->imagenes as $img)
+                <div class="text-center">
+                    <img src="{{ asset('storage/' . $img->ruta) }}" style="height:80px; width:80px; object-fit:cover; border-radius:4px;"><br>
+                    <div class="form-check form-check-inline mt-1">
+                        <input type="checkbox" name="eliminar_galeria[]" value="{{ $img->id }}" class="form-check-input" id="del_img_{{ $img->id }}">
+                        <label class="form-check-label small" for="del_img_{{ $img->id }}">Eliminar</label>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
+
 <div class="row">
     <div class="col-md-4 mb-3">
         <label class="form-label">Precio</label>

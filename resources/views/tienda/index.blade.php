@@ -47,6 +47,13 @@
             @foreach($productos as $producto)
                 <div class="col-md-3 mb-4">
                     <div class="card h-100">
+                        @if($producto->imagen)
+                            <img src="{{ asset('storage/' . $producto->imagen) }}" class="card-img-top" style="height:180px; object-fit:cover;" alt="{{ $producto->nombre }}">
+                        @else
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height:180px;">
+                                <span class="text-muted">Sin imagen</span>
+                            </div>
+                        @endif
                         <div class="card-body">
                             <h6>{{ $producto->nombre }}</h6>
                             <small class="text-muted">{{ $producto->categoria->nombre }} · +{{ $producto->edad_minima }} años</small>
