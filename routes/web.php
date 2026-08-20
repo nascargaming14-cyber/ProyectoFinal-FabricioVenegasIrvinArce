@@ -29,9 +29,6 @@ Route::get('/tienda/{producto}', [ProductoController::class, 'show'])->name('tie
 
 // Administración y carrito (requiere estar logueado)
 Route::middleware(['auth'])->group(function () {
-    Route::resource('categorias', CategoriaController::class)->except(['show']);
-    Route::resource('productos', ProductoController::class)->except(['show']);
-
     Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito.index');
     Route::post('/carrito/agregar/{producto}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
     Route::patch('/carrito/actualizar/{item}', [CarritoController::class, 'actualizar'])->name('carrito.actualizar');
@@ -40,7 +37,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pedidos/{pedido}/confirmacion', [CarritoController::class, 'confirmacion'])->name('pedidos.confirmacion');
 });
 
-Route::middleware(['auth'])->group(function () {
+// Solo administradores
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::resource('categorias', CategoriaController::class)->except(['show']);
+    Route::resource('productos', ProductoController::class)->except(['show']);
+
     Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
     Route::get('/reportes/mes', [ReporteController::class, 'porMes'])->name('reportes.mes');
     Route::get('/reportes/cliente', [ReporteController::class, 'porCliente'])->name('reportes.cliente');

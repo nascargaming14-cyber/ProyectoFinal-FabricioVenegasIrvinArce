@@ -20,17 +20,19 @@
                         {{ __('Carrito') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
-                        {{ __('Categorías') }}
-                    </x-nav-link>
+                    @if(Auth::user()->esAdmin())
+                        <x-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
+                            {{ __('Categorías') }}
+                        </x-nav-link>
 
-                    <x-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')">
-                        {{ __('Productos') }}
-                    </x-nav-link>
+                        <x-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')">
+                            {{ __('Productos') }}
+                        </x-nav-link>
 
-                    <x-nav-link :href="route('reportes.index')" :active="request()->routeIs('reportes.*')">
-                        {{ __('Reportes') }}
-                    </x-nav-link>
+                        <x-nav-link :href="route('reportes.index')" :active="request()->routeIs('reportes.*')">
+                            {{ __('Reportes') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -89,15 +91,18 @@
             <x-responsive-nav-link :href="route('carrito.index')" :active="request()->routeIs('carrito.*')">
                 {{ __('Carrito') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
-                {{ __('Categorías') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')">
-                {{ __('Productos') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('reportes.index')" :active="request()->routeIs('reportes.*')">
-                {{ __('Reportes') }}
-            </x-responsive-nav-link>
+
+            @if(Auth::user()->esAdmin())
+                <x-responsive-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
+                    {{ __('Categorías') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')">
+                    {{ __('Productos') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('reportes.index')" :active="request()->routeIs('reportes.*')">
+                    {{ __('Reportes') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

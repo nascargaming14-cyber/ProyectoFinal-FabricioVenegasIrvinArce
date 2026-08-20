@@ -18,11 +18,17 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = [
+        protected $fillable = [
         'name',
         'email',
         'password',
+        'rol',
     ];
+
+    public function esAdmin(): bool
+    {
+        return $this->rol === 'admin';
+    }
 
     /**
      * The attributes that should be hidden for serialization.
