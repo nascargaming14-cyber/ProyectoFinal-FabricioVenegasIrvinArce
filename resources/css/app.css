@@ -1,3 +1,88 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================
+   PALETA DE MARCA — LEGO STORE
+   ============================================ */
+:root {
+    --brick-yellow: #FFD500;
+    --brick-yellow-dark: #E8C200;
+    --brick-red: #E3000B;
+    --brick-red-dark: #C40009;
+    --brick-black: #1A1A1A;
+}
+
+/* ============================================
+   OVERRIDE DE BOOTSTRAP — un solo lugar
+   Afecta btn-primary, bg-primary, text-primary,
+   badge bg-primary, etc. en TODA la app
+   ============================================ */
+:root {
+    --bs-primary: var(--brick-red);
+    --bs-primary-rgb: 227, 0, 11;
+    --bs-danger: var(--brick-red);
+    --bs-danger-rgb: 227, 0, 11;
+    --bs-link-color: var(--brick-red);
+    --bs-link-color-rgb: 227, 0, 11;
+    --bs-link-hover-color: var(--brick-red-dark);
+}
+
+.btn-primary {
+    background-color: var(--brick-red);
+    border-color: var(--brick-red);
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--brick-red-dark) !important;
+    border-color: var(--brick-red-dark) !important;
+}
+
+.btn-outline-primary {
+    color: var(--brick-red);
+    border-color: var(--brick-red);
+}
+.btn-outline-primary:hover {
+    background-color: var(--brick-red);
+    border-color: var(--brick-red);
+}
+
+.btn-success {
+    background-color: var(--brick-red);
+    border-color: var(--brick-red);
+}
+.btn-success:hover,
+.btn-success:focus {
+    background-color: var(--brick-red-dark) !important;
+    border-color: var(--brick-red-dark) !important;
+}
+
+.text-danger {
+    color: var(--brick-red) !important;
+}
+
+.badge.bg-success {
+    background-color: #1a7a1a !important;
+}
+
+/* Botón "Buscar" del catálogo, checkbox, focus rings */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--brick-yellow-dark);
+    box-shadow: 0 0 0 0.25rem rgba(255, 213, 0, 0.35);
+}
+
+/* ============================================
+   PAGINACIÓN (afecta $productos->links())
+   ============================================ */
+.pagination .page-item.active .page-link {
+    background-color: var(--brick-red);
+    border-color: var(--brick-red);
+}
+.pagination .page-link {
+    color: var(--brick-red);
+}
+.pagination .page-link:hover {
+    color: var(--brick-red-dark);
+}

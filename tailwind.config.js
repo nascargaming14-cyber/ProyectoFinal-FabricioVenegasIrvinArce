@@ -14,6 +14,16 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                brick: {
+                    yellow: '#FFD500',
+                    'yellow-dark': '#E8C200',
+                    red: '#E3000B',
+                    'red-dark': '#C40009',
+                    black: '#1A1A1A',
+                    dark: '#242424',
+                },
+            },
         },
     },
 
