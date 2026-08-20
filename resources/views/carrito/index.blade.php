@@ -31,7 +31,7 @@
                             <td>
                                 <form action="{{ route('carrito.actualizar', $item) }}" method="POST" class="d-flex gap-1">
                                     @csrf @method('PATCH')
-                                    <input type="number" name="cantidad" value="{{ $item->cantidad }}" min="1" class="form-control form-control-sm" style="width: 70px">
+                                    <input type="number" name="cantidad" value="{{ $item->cantidad }}" min="1" max="{{ $item->producto->stock }}" class="form-control form-control-sm" style="width: 70px">
                                     <button class="btn btn-sm btn-outline-secondary">↻</button>
                                 </form>
                             </td>
@@ -50,6 +50,7 @@
             <div class="text-end">
                 <p>Subtotal: ₡{{ number_format($subtotal, 0) }}</p>
                 <p>Impuesto (13%): ₡{{ number_format($impuesto, 0) }}</p>
+                <p>Envío: ₡{{ number_format($costoEnvio, 0) }}</p>
                 <p class="fs-5 fw-bold">Total: ₡{{ number_format($total, 0) }}</p>
 
                 <form action="{{ route('carrito.checkout') }}" method="POST" class="d-inline-block text-start" style="width: 260px">
@@ -67,3 +68,4 @@
         @endif
     </div>
 </x-app-layout>
+

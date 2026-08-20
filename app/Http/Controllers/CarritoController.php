@@ -16,25 +16,41 @@ class CarritoController extends Controller
         return Carrito::firstOrCreate(['user_id' => Auth::id()]);
     }
 
+    // Calcula subtotal, impuesto, envío y total a partir de una colección de items
+    private function calcularTotales($items)
+    {
+        $subtotal = $items->sum(fn($item) => $item->cantidad * $item->precio_unitario);
+        $impuesto = round($subtotal * 0.13, 2); // IVA 13%
+        $costoEnvio = $subtotal >= 50000 ? 0 : 3000; // envío gratis sobre ₡50,000
+        $total = $subtotal + $impuesto + $costoEnvio;
+
+        return compact('subtotal', 'impuesto', 'costoEnvio', 'total');
+    }
+
     public function index()
     {
         $carrito = $this->carritoActual();
         $items = $carrito->items()->with('producto')->get();
 
-        $subtotal = $items->sum(fn($item) => $item->cantidad * $item->precio_unitario);
-        $impuesto = round($subtotal * 0.13, 2); // IVA 13%
-        $total = $subtotal + $impuesto;
+        $totales = $this->calcularTotales($items);
 
-        return view('carrito.index', compact('items', 'subtotal', 'impuesto', 'total'));
+        return view('carrito.index', array_merge(compact('items'), $totales));
     }
 
     public function agregar(Request $request, Producto $producto)
     {
+        if ($producto->stock <= 0) {
+            return back()->with('error', 'Este producto está agotado.');
+        }
+
         $carrito = $this->carritoActual();
 
         $item = $carrito->items()->where('producto_id', $producto->id)->first();
 
         if ($item) {
+            if ($item->cantidad + 1 > $producto->stock) {
+                return back()->with('error', 'No hay suficiente stock disponible.');
+            }
             $item->increment('cantidad');
         } else {
             $precio = $producto->precio_oferta ?? $producto->precio;
@@ -50,7 +66,12 @@ class CarritoController extends Controller
 
     public function actualizar(Request $request, CarritoItem $item)
     {
-        $request->validate(['cantidad' => 'required|integer|min:1']);
+        abort_unless($item->carrito->user_id === Auth::id(), 403);
+
+        $request->validate([
+            'cantidad' => 'required|integer|min:1|max:' . $item->producto->stock,
+        ]);
+
         $item->update(['cantidad' => $request->cantidad]);
 
         return redirect()->route('carrito.index')->with('success', 'Carrito actualizado.');
@@ -58,11 +79,14 @@ class CarritoController extends Controller
 
     public function eliminar(CarritoItem $item)
     {
+        abort_unless($item->carrito->user_id === Auth::id(), 403);
+
         $item->delete();
+
         return redirect()->route('carrito.index')->with('success', 'Producto eliminado del carrito.');
     }
 
-        public function checkout(Request $request)
+    public function checkout(Request $request)
     {
         $request->validate([
             'metodo_pago' => 'required|in:tarjeta,paypal',
@@ -75,17 +99,22 @@ class CarritoController extends Controller
             return redirect()->route('carrito.index')->with('error', 'Tu carrito está vacío.');
         }
 
-        $subtotal = $items->sum(fn($item) => $item->cantidad * $item->precio_unitario);
-        $impuesto = round($subtotal * 0.13, 2);
-        $costoEnvio = $subtotal >= 50000 ? 0 : 3000; // envío gratis sobre ₡50,000
-        $total = $subtotal + $impuesto + $costoEnvio;
+        // Verifica stock disponible antes de confirmar (por si cambió desde que se agregó al carrito)
+        foreach ($items as $item) {
+            if ($item->cantidad > $item->producto->stock) {
+                return redirect()->route('carrito.index')
+                    ->with('error', "No hay suficiente stock de \"{$item->producto->nombre}\".");
+            }
+        }
+
+        $totales = $this->calcularTotales($items);
 
         $pedido = \App\Models\Pedido::create([
             'user_id'            => Auth::id(),
             'fecha_compra'       => now(),
-            'monto_total'        => $total,
-            'impuesto'           => $impuesto,
-            'costo_envio'        => $costoEnvio,
+            'monto_total'        => $totales['total'],
+            'impuesto'           => $totales['impuesto'],
+            'costo_envio'        => $totales['costoEnvio'],
             'numero_seguimiento' => strtoupper(\Illuminate\Support\Str::random(10)),
             'estado'             => 'confirmado',
             'metodo_pago'        => $request->metodo_pago,
@@ -106,8 +135,11 @@ class CarritoController extends Controller
 
         return redirect()->route('pedidos.confirmacion', $pedido)->with('success', '¡Pedido confirmado!');
     }
+
     public function confirmacion(\App\Models\Pedido $pedido)
     {
+        abort_unless($pedido->user_id === Auth::id(), 403);
+
         return view('carrito.confirmacion', compact('pedido'));
     }
 }
